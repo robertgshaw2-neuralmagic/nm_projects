@@ -4,7 +4,7 @@
 
 ## :arrow_heading_down: Installation
 
-We will utilize SparseML, an open-source library that includes tools to create sparse models. SparseML is integrated with
+SparseML, an open-source library that includes tools to create sparse models. SparseML is integrated with
 Ultralytics YOLOv5, making it easy to apply SparseML's algorithms to YOLOv5 models.
 
 Install SparseML with the following command. We recommend using a virtual enviornment.
@@ -22,8 +22,10 @@ Pruning and Quantization work best when performed with access to training data t
 allows the model to slowly adjust to the new optimization space as the pathways are removed or
 become less precise. We descibe the key training-aware sparsity algorithms below. 
 
-#### :scissors: Pruning: GMP
-
+<details>
+    <summary><b>:scissors: Pruning: GMP</b></summary>
+    <br>
+   
 Gradual magnitude pruning or **GMP** is the best algorithm for pruning. With it, 
 the weights closest to zero are iteratively removed over several epochs or training steps up to a specified level of sparsity. 
 The remaining non-zero weights are then fine-tuned to the objective function. This iterative process enables 
@@ -31,9 +33,13 @@ the model to slowly adjust to a new optimization space after pathways are remove
 
 SparseML enables you to run GMP on YOLO-v5 with a single command line call.
 
-#### :black_square_button: Quantization: QAT
+</details>
+        
+<details>
+    <summary><b>:black_square_button: Quantization: QAT</b></summary>
+    <br>
 
-Quantization aware training or **QAT** is the best algorithm. With it, fake quantization 
+Quantization aware training or **QAT** is the best algorithm for quantization. With it, fake quantization 
 operators are injected into the graph before quantizable nodes for activations, and weights 
 are wrapped with fake quantization operators. The fake quantization operators interpolate 
 the weights and activations down to `INT8` on the forward pass but enable a full update of 
@@ -41,7 +47,9 @@ the weights at `FP32` on the backward pass. This allows the model to adapt to th
 information from quantization on the forward pass. 
 
 SparseML enables you to run QAT on YOLO-v5 with a single command line call.
-
+    
+</details>
+    
 For more conceputal details checkout this [blog](https://neuralmagic.com/blog/pruning-overview/).
 
 ## :cook: Creating SparseML Recipes
@@ -61,7 +69,12 @@ As such, we will explain the `Modifiers` used in the recipes for **GMP** and **Q
 >for a model already exists (e.g. for YOLOv5-s and YOLOv5-l), you should use the pre-made recipes as starting point
 >and tweak as needed.
 
-#### :scissors: GMP Modifiers
+>:rotating_light: **Pro-Tip #2:** if a pre-sparsified model already exists in SparseZoo (e.g. YOLOv5-s or YOLOv5-l), you should
+>consider using [sparse transfer learning](Ultralytics-STL-README.md). It is a much easier way to create a sparse model trained on your data.
+
+<details>
+    <summary><b>:scissors: GMP Modifiers</b></summary>
+    <br>
 
 An example `recipe.yaml` file for GMP is the following:
 
@@ -100,8 +113,12 @@ Each `Modifier` encodes a hyperparameter of the **GMP** algorithm:
 
 30 pruning epochs and 20 finetuning epochs were chosen based on a 50 epoch training schedule -- be sure to adjust based on the number of epochs as needed.
 
-#### 🔲 QAT Modifiers
+</details>
 
+<details>
+    <summary><b>🔲 QAT Modifiers</b></summary>
+    <br>
+    
 An example `recipe.yaml` file for QAT is the following:
 
 ```yaml
@@ -127,6 +144,8 @@ Note the `model` is used here as a general placeholder; to determine the name of
   - The `QuantizationModifier` starts at epoch 0 and freezes batch normalization statistics at the start of epoch 3.
   - The `SetLearningRateModifier` sets the quantization LR to 10e-6 (0.01 times the example final LR of 0.001).
   - The `EpochRangeModifier` sets the training time to continue training for the desired 5 epochs.
+
+</details>
 
 ## :fork_and_knife: Applying SparseML Recipes to YOLOv5
 
