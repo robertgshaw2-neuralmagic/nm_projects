@@ -1,12 +1,12 @@
 # Realtime Deployments on CPUs with DeepSparse
 
-:woman_student: :man_student: Learn how to deploy YOLOv5 with **realtime latency on CPUs** utilizing Neural Magic's DeepSparse Engine :bangbang: 
+:books: Learn how to deploy YOLOv5 with **realtime latency on CPUs** utilizing Neural Magic's DeepSparse Engine:bangbang: 
 
 :cinema: Checkout a demo of our DeepSparse running YOLOv5 in realtime on a 4 core laptop on [YouTube](https://www.youtube.com/watch?v=gGErxSqf05o).
 
 UPDATED September 2022
 
-DeepSparse is free to use for research, testing, and development but requires a commerical license for production use. We have a [60 day free trail](link_to_trial_page) running for the commerical version.
+DeepSparse is free for research, testing, and development but requires a commerical license for production use. We have a [60 day free trail](link_to_trial_page) running for the commerical version.
 
 # DeepSparse Overview
 
