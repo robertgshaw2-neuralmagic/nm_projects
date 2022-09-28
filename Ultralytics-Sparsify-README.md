@@ -128,7 +128,7 @@ Note the `model` is used here as a general placeholder; to determine the name of
   - The `SetLearningRateModifier` sets the quantization LR to 10e-6 (0.01 times the example final LR of 0.001).
   - The `EpochRangeModifier` sets the training time to continue training for the desired 5 epochs.
 
-## Applying SparseML Recipes to YOLOv5
+## :fork_and_knife: Applying SparseML Recipes to YOLOv5
 
 Once you have created a Recipe or identifed a Recipe in the SparseZoo, you can use the SparseML-YOLOv5 integration 
 to kick off the sparsification process with a single command line call.
@@ -160,7 +160,7 @@ precision with very little loss of accuracy. In this example, we achieve 95% rec
 for the dense baseline. The majority of layers are pruned between 65% and 85%, with some more senstive 
 layers pruned to 50%. On our training run, final accuracy is 62.3 mAP@0.5 as reported by the Ultralytics training script.
 
-## Exporting the Sparse Model to ONNX
+## ⤴️ Exporting the Sparse Model to ONNX
 
 Many inference runtimes accept ONNX as the input format.
 
@@ -172,7 +172,7 @@ sparseml.yolov5.export_onnx \
    --dynamic
 ```
 
-## Deploying on CPUs for Performance
+## 🚀 Deploying YOLOv5 on CPUs for Performance
 
 The resulting pruned-quantized YOLOv5-l model is now only 11MB vs the original dense model at 143MB. However, because we pruned in an unstructured manner 
 (where any weight can be set to 0, not just groups of weights), inference runtimes (especially GPU-based inference runtimes) will be unlikely to get 
