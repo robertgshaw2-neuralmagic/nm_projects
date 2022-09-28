@@ -160,7 +160,7 @@ precision with very little loss of accuracy. In this example, we achieve 95% rec
 for the dense baseline. The majority of layers are pruned between 65% and 85%, with some more senstive 
 layers pruned to 50%. On our training run, final accuracy is 62.3 mAP@0.5 as reported by the Ultralytics training script.
 
-## ⤴️ Exporting the Sparse Model to ONNX
+## ⤴️ Exporting to ONNX
 
 Many inference runtimes accept ONNX as the input format.
 
