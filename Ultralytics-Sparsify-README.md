@@ -1,4 +1,4 @@
-# Model Pruning/Sparsity
+# Pruning YOLOv5 :rocket:
 
 :books: This guide explains how to apply **pruning** and **quantization** using [SparseML](https://github.com/neuralmagic/sparseml) to YOLOv5 :rocket: models.
 
