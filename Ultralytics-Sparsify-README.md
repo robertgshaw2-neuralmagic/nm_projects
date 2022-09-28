@@ -18,12 +18,9 @@ SparseML generally applies two major techniques to create sparse models:
 - **Pruning** systematically removes redundant weights from a network
 - **Quantization** reduces model precision by converting weights from `FP32` to `INT8`
 
-**Pruning** and **Quantization** work best when performed with access to training data that
+Pruning and Quantization work best when performed with access to training data that
 allows the model to slowly adjust to the new optimization space as the pathways are removed or
-become less precise. 
-
-We descibe the key training-aware sparsity algorithms below. For more details on the concepts behind
-pruning and quantization, follow along on the following [blog](https://neuralmagic.com/blog/pruning-overview/).
+become less precise. We descibe the key training-aware sparsity algorithms below. 
 
 #### :scissors: Pruning: GMP
 
@@ -45,18 +42,24 @@ information from quantization on the forward pass.
 
 SparseML enables you to run QAT on YOLO-v5 with a single command line call.
 
-## :cook: Sparsifying with SparseML: `Recipes`
+For more conceputal details checkout this [blog](https://neuralmagic.com/blog/pruning-overview/).
 
-`Recipes` are YAML or YAML front matter markdown files that encode the hyperparameters of the **GMP** 
-and **QAT** algorithms. The rest of the SparseML system parses the `Recipes` to setup the **GMP** and 
-**QAT** algorithms 
+## :cook: Creating SparseML Recipes
 
-The easiest way to create a `Recipe` for usage with SparseML is downloading a pre-made `Recipe`
+Recipes are YAML or YAML front matter markdown files that encode the hyperparameters of the **GMP** 
+and **QAT** algorithms. The rest of the SparseML system parses the Recipes to setup the **GMP** and 
+**QAT** algorithms.
+
+The easiest way to create a Recipe for usage with SparseML is downloading a pre-made Recipe
 from the SparseZoo model repo ([example: YOLOv5-l model card](https://sparsezoo.neuralmagic.com/models/cv%2Fdetection%2Fyolov5-l%2Fpytorch%2Fultralytics%2Fcoco%2Fpruned_quant-aggressive_95)). 
-These `Recipes` were used to create the state-of-the-art sparsified models found in the SparseZoo repo.
+These Recipes were used to create the state-of-the-art sparsified models found in the SparseZoo repo.
 
-However, some users may want to tweak the original `Recipe` or create a `Recipe` from scratch. 
+However, some users may want to tweak the original Recipe or create a Recipe from scratch. 
 As such, we will explain the `Modifiers` used in the recipes for **GMP** and **QAT**.
+
+>:rotating_light: **Pro-Tip:** the pre-made Recipes in the SparseZoo are very good. If a pre-made Recipe
+>for a model already exists (e.g. for YOLOv5-s and YOLOv5-l), you should use the pre-made recipes as starting point
+>and tweak as needed.
 
 #### :scissors: GMP Modifiers
 
@@ -95,7 +98,7 @@ Each `Modifier` encodes a hyperparameter of the **GMP** algorithm:
   - `LearningRateFunctionModifier` cycles the LR from 0.5 to 0.001 with a cosine curve (0.001 was the final original training LR).
   - `EpochRangeModifier` expands the training time to continue finetuning for an additional `20` epochs after pruning has ended.
 
-`30` pruning epochs and `20` finetuning epochs were chosen based on a `90` epoch training schedule -- be sure to adjust based on the number of epochs as needed.
+30 pruning epochs and 20 finetuning epochs were chosen based on a 50 epoch training schedule -- be sure to adjust based on the number of epochs as needed.
 
 #### 🔲 QAT Modifiers
 
@@ -125,9 +128,9 @@ Note the `model` is used here as a general placeholder; to determine the name of
   - The `SetLearningRateModifier` sets the quantization LR to 10e-6 (0.01 times the example final LR of 0.001).
   - The `EpochRangeModifier` sets the training time to continue training for the desired 5 epochs.
 
-## Sparsification With SparseML: Applying A `Recipe` to YOLOv5
+## Applying SparseML Recipes to YOLOv5
 
-Once you have created a `Recipe` or identifed a `Recipe` in the SparseZoo, you can use the SparseML-YOLOv5 integration 
+Once you have created a Recipe or identifed a Recipe in the SparseZoo, you can use the SparseML-YOLOv5 integration 
 to kick off the sparsification process with a single command line call.
 
 In this example, we will use dense YOLOv5-l from the SparseZoo as the starting point and the pre-made sparsification recipe for YOLOv5-l. 
@@ -137,7 +140,6 @@ They are identified by the following `sparsezoo_stubs`:
 zoo:cv/detection/yolov5-l/pytorch/ultralytics/coco/pruned_quant-aggressive_95
 zoo:cv/detection/yolov5-s/pytorch/ultralytics/coco/base-none
 ```
-
 
 The following CLI command kicks off the sparsification process, fine-tuning onto the COCO dataset:
 
@@ -176,4 +178,4 @@ The resulting pruned-quantized YOLOv5-l model is now only 11MB vs the original d
 (where any weight can be set to 0, not just groups of weights), inference runtimes (especially GPU-based inference runtimes) will be unlikely to get 
 much of a performance speedup. To take advantage of unstructured sparsity, you must deploy on a sparsity-aware inference runtime.
 
-See YOLOv5's integration with a [DeepSparse](Ultralytics-DeepSparse-README.md) for more details on speedups with sparsity-aware runtimes.
+See [YOLOv5's integration with a DeepSparse](Ultralytics-DeepSparse-README.md) for more details on speedups with sparsity-aware runtimes.
