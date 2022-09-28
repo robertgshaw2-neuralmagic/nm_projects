@@ -5,7 +5,7 @@
 ## :arrow_heading_down: Installation
 
 We will utilize SparseML, an open-source library that includes tools to create sparse models. SparseML is integrated with
-Ultralytic's YOLOv5, making it easy to apply SparseML's algorithms to YOLOv5 models.
+Ultralytics YOLOv5, making it easy to apply SparseML's algorithms to YOLOv5 models.
 
 Install SparseML with the following command. We recommend using a virtual enviornment.
 ```bash
