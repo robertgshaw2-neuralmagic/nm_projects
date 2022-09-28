@@ -12,7 +12,7 @@ DeepSparse is free for research, testing, and development but requires a commeri
 
 DeepSparse is an inference runtime and server (similiar to NVIDIA's TensorRT+Triton) which runs **sparse** models with GPU-level performance on CPUs. By deploying perfomantly on CPUs, you can simplify deployment and reduce costs from cloud to edge.
 
->:rotating_light: **Clarification:** When we say sparse models, we are describing sparsity in the **weights** of the model. With proper pruning algorithmgs you can set 80% of YOLOv5 weights to 0 and retain 99% of the dense model's accuracy. See [Sparsifying YOLOv5](other_README) for more details.
+>:rotating_light: **Clarification:** When we say sparse models, we are describing sparsity in the **weights** of the model. With proper pruning algorithms you can set ~75% of YOLOv5-l weights to 0 and retain 95% of the dense model's accuracy. See [Sparsifying YOLOv5](Ultralytics-Sparsify-README.md) for more details.
 
 DeepSparse achieves realtime performance on CPUs through two main innovations:
 - First, it implements sparse convolutions and matrix multiply operations, reducing the number of FLOPs by skipping the 0s. 
