@@ -2,7 +2,7 @@
 
 :books: This guide explains how to apply **pruning** and **quantization** to YOLOv5 :rocket: models.
 
-## Installation
+## :arrow_heading_down: Installation
 
 We will utilize SparseML, an open-source library that includes tools to create sparse models. SparseML is integrated with
 Ultralytic's YOLOv5, making it easy to apply SparseML's algorithms to YOLOv5 models.
@@ -12,7 +12,7 @@ Install SparseML with the following command. We recommend using a virtual envior
 pip install sparseml[torchvision]
 ```
 
-## Sparsity Conceptual Overview
+## 💡 Sparsity Conceptual Overview
 
 SparseML generally applies two major techniques to create sparse models:
 - **Pruning** systematically removes redundant weights from a network
@@ -23,9 +23,9 @@ allows the model to slowly adjust to the new optimization space as the pathways 
 become less precise. 
 
 We descibe the key training-aware sparsity algorithms below. For more details on the concepts behind
-pruning and quantization, follow along on the following [blog](https://neuralmagic.com/blog/pruning-overview/)
+pruning and quantization, follow along on the following [blog](https://neuralmagic.com/blog/pruning-overview/).
 
-### :scissors: Pruning: GMP
+#### :scissors: Pruning: GMP
 
 Gradual magnitude pruning or **GMP** is the best algorithm for pruning. With it, 
 the weights closest to zero are iteratively removed over several epochs or training steps up to a specified level of sparsity. 
@@ -34,7 +34,7 @@ the model to slowly adjust to a new optimization space after pathways are remove
 
 SparseML enables you to run GMP on YOLO-v5 with a single command line call.
 
-### :black_square_button: Quantization: QAT
+#### :black_square_button: Quantization: QAT
 
 Quantization aware training or **QAT** is the best algorithm. With it, fake quantization 
 operators are injected into the graph before quantizable nodes for activations, and weights 
@@ -45,7 +45,7 @@ information from quantization on the forward pass.
 
 SparseML enables you to run QAT on YOLO-v5 with a single command line call.
 
-## Sparsifying with SparseML: `Recipes`
+## :cook: Sparsifying with SparseML: `Recipes`
 
 `Recipes` are YAML or YAML front matter markdown files that encode the hyperparameters of the **GMP** 
 and **QAT** algorithms. The rest of the SparseML system parses the `Recipes` to setup the **GMP** and 
@@ -58,7 +58,7 @@ These `Recipes` were used to create the state-of-the-art sparsified models found
 However, some users may want to tweak the original `Recipe` or create a `Recipe` from scratch. 
 As such, we will explain the `Modifiers` used in the recipes for **GMP** and **QAT**.
 
-### GMP Modifiers
+#### :scissors: GMP Modifiers
 
 An example `recipe.yaml` file for GMP is the following:
 
@@ -97,7 +97,7 @@ Each `Modifier` encodes a hyperparameter of the **GMP** algorithm:
 
 `30` pruning epochs and `20` finetuning epochs were chosen based on a `90` epoch training schedule -- be sure to adjust based on the number of epochs as needed.
 
-### QAT Modifiers
+#### 🔲 QAT Modifiers
 
 An example `recipe.yaml` file for QAT is the following:
 
@@ -130,18 +130,16 @@ Note the `model` is used here as a general placeholder; to determine the name of
 Once you have created a `Recipe` or identifed a `Recipe` in the SparseZoo, you can use the SparseML-YOLOv5 integration 
 to kick off the sparsification process with a single command line call.
 
-In this example, we will use the pre-made sparsification recipe for YOLOv5-l identified by the following `sparsezoo_stub`:
+In this example, we will use dense YOLOv5-l from the SparseZoo as the starting point and the pre-made sparsification recipe for YOLOv5-l. 
+They are identified by the following `sparsezoo_stubs`:
+
 ```
 zoo:cv/detection/yolov5-l/pytorch/ultralytics/coco/pruned_quant-aggressive_95
-```
-
-Additionally, the SparseZoo has a dense version of YOLOv5-l available for use. We will use this model as the starting point 
-for the sparsification process. It is identified by the following `sparsezoo_stub`:
-```
 zoo:cv/detection/yolov5-s/pytorch/ultralytics/coco/base-none
 ```
 
-The following command kicks off the sparsification process, fine-tuning onto the COCO dataset:
+
+The following CLI command kicks off the sparsification process, fine-tuning onto the COCO dataset:
 
 ```
 sparseml.yolov5.train \
@@ -151,11 +149,12 @@ sparseml.yolov5.train \
   --recipe zoo:cv/detection/yolov5-l/pytorch/ultralytics/coco/pruned_quant-aggressive_95
 ```
 
+#### MARK: PLEASE ADD COMMENTS HERE IF THERE IS ANY COMPLEXITY WITH SPECIFYING WEIGHTS #####
 We have used `sparse_zoo` stubs in this example, but you can also pass `local_path` to `--weights` if you
 want to use a different baseline model and to `--recipe` if you want to use a custom recipe.
 
-In general, deep neural networks are highly overparameterized, meaning we can remove weights and reduce
-precision with very little loss of accuracy. In this example we achieve 95% recovery of the accuracy 
+In general, deep neural networks are overparameterized, meaning we can remove weights and reduce
+precision with very little loss of accuracy. In this example, we achieve 95% recovery of the accuracy 
 for the dense baseline. The majority of layers are pruned between 65% and 85%, with some more senstive 
 layers pruned to 50%. On our training run, final accuracy is 62.3 mAP@0.5 as reported by the Ultralytics training script.
 
@@ -167,8 +166,8 @@ The SparseML installation provides a sparseml.yolov5.export_onnx command that yo
 
 ```
 sparseml.yolov5.export_onnx \
-	    --weights path/to/weights.pt \
-	    --dynamic
+   --weights path/to/weights.pt \
+   --dynamic
 ```
 
 ## Deploying on CPUs for Performance
@@ -177,4 +176,4 @@ The resulting pruned-quantized YOLOv5-l model is now only 11MB vs the original d
 (where any weight can be set to 0, not just groups of weights), inference runtimes (especially GPU-based inference runtimes) will be unlikely to get 
 much of a performance speedup. To take advantage of unstructured sparsity, you must deploy on a sparsity-aware inference runtime.
 
-See YOLOv5's integration with [DeepSparse](Ultralytics-DeepSparse-README.md) for more details.
+See YOLOv5's integration with a [DeepSparse](Ultralytics-DeepSparse-README.md) for more details on speedups with sparsity-aware runtimes.
