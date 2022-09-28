@@ -83,6 +83,11 @@ accepts a dataset, a base pre-sparsified model, and a transfer learning recipe.
 
 ### :cook: Transfer Learning Recipes
 
+<details>
+  
+  <summary>Click to learn more. ⚠️: You can skip this section if you use an off the shelf recipe from SparseZoo</summary>
+  <br>
+  
 SparseML uses **Recipes** to encode the the hyperparameters of the sparse transfer learning process. SparseZoo has pre-made transfer learning recipes for YOLOv5-s and YOLOv5-l off-the-shelf. 
 >:rotating_light: **Pro Tip:** Most should use the off-the-shelf recipes for transfer learning (or slightly tweak if needed).
 
@@ -105,10 +110,13 @@ quantization_modifiers:
     start_epoch: eval(quantization_start_epoch)
     submodules: [ 'model.0', 'model.1', 'model.2', 'model.3', 'model.4', 'model.5', 'model.6', 'model.7', 'model.8', 'model.9', 'model.10', 'model.11', 'model.12', 'model.13', 'model.14', 'model.15', 'model.16', 'model.17', 'model.18', 'model.19', 'model.20', 'model.21', 'model.22', 'model.23' ]
 ```
-### 🏋️: Training The Model
+</details>
+
+### 🏋️ Training The Model
 
 As an example, we will sparse transfer learn **pruned-quantized YOLOv5-l** (which was trained on COCO) onto the VOC dataset. The `train`
-command downloads the VOC dataset (using the download script from `VOC.yaml`) and kicks off transfer learning using the recipe defined the SparseZoo.
+command downloads the VOC dataset (using the download script from `VOC.yaml`) and kicks off transfer learning using the pre-made recipe from SparseZoo.
+
 While this example uses SparseZoo stubs as the `weights` and `recipe` parameters, you can also pass paths to a local YOLOv5 model / recipe as needed.
 
 ```bash
@@ -132,7 +140,7 @@ Since SparseML is integrated with Ultralytics, you get all of the same [outputs 
 
 Many inference runtimes accept ONNX as the input format.
 
-The SparseML installation provides a `sparseml.yolov5.export_onnx` command that you can use to export. The export process 
+SparseML provides a `sparseml.yolov5.export_onnx` command that you can use to export. SparseML's export process 
 ensures that the quantized and pruned models properly tranlated to ONNX. Be sure the `--weights` argument points to your trained model.
 
 ```
