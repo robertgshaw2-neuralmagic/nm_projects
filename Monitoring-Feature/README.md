@@ -9,6 +9,13 @@ DeepSparse provides a simple YAML-based configuration setup with many pre-define
 ## Configuration
 
 Logging is configured through YAML-files. 
+- System Logging is *enabled* by default, and the YAML file is used to disable groups of system metrics
+- Data Logging is *disabled* by defualt, and the YAML file is used to specify which data (or functions thereof) should be logged
+
+The configuration file looks like this:
+```yaml
+loggers
+```
 
 <details>
     <summary><b>System Logging Configuration</b></summary>
@@ -46,7 +53,7 @@ Data Logging is *disabled* by default. Users can log functions of the inputs/out
 |Description|Inputs passed by user|Tensors passed to engine|Outputs from engine (logits)|Postprocessed output returned to user|
 |`stage_id` |`pipeline_inputs`  |`engine_inputs`|`engine_outputs`   |`pipeline_outputs` |
     
-To apply a list of [pre-defined](link) and/or [custom functions](link) to a `stage_id` use the following format:
+The following format is used to apply a list of [pre-defined](link) and/or [custom functions](link) to a Pipeline Stage:
  
 ```yaml
 stage_id:
@@ -81,16 +88,15 @@ engine_inputs:
 # engine_outputs:                             # not specified, so not logged
 # pipeline_outputs:                           # not specified, so not logged
 ```
-The configuration does the following at each stag
+This configuration does the following at each stage of the Pipeline:
 - *Pipeline Inputs*: Raw data (from the `identity` function) is logged to Prometheus once every 100 predictions and a custom function called `my_fn` is applied once every 1000 predictions and is logged to all loggers.
 - *Engine Inputs*: The `channel-mean` function is applied once per 10 predictions and is logged to all loggers.
-- *Engine Outputs*: Not specified and therefore not logged 
-- *Pipeline Outputs*: Not specified and therefore not logged 
-
-
-
+- *Engine Outputs*: No logging occurs at this stage
+- *Pipeline Outputs*: No logging occurs at this stage
 
 </details>
+
+
 
 ## Usage
 
