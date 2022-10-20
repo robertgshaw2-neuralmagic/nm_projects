@@ -16,13 +16,13 @@ Logging is configured through YAML-files.
 
 System Logging is *enabled* by default. All metrics are [pre-defined](/README.md#system-logging-metrics). Users can disable System Logging globally or at the Group level by adding the following key-value pairs to a configuration file.
 
-Example disabling all System Logging:
+Example YAML snippit disabling all System Logging:
 
 ```yaml
 system_logging: off
 ```
 
-Example disabling at the Group Level:
+Example YAML snippit disabling at the Group Level:
 
 ```yaml
 system_logging:
@@ -39,33 +39,55 @@ system_logging:
     <summary><b>Data Logging Configuration</b></summary>
     </br>
     
-Data Logging is *disabled* by default. Users can log the raw input / output (and functions thereof) at each stage of a `Pipeline`. Many functions have been [pre-defined](link) and users can provide [custom functions](link). 
+Data Logging is *disabled* by default. Users can log functions of the inputs/outputs at each of the 4 stages of a `Pipeline`:
 
-A `Pipeline` has 4 stages, each of which can be a `target` for data logging:
 |Stage      |Pipeline Inputs    |Engine Inputs  |Engine Outputs     |Pipeline Outputs   |
 |-----------|-------------------|---------------|-------------------|-------------------|
-|Desciption |Inputs passed by user|Tensors passed to the engine|Outputs from the engine (logits)|Postprocessed output returned to user|
-|Target     |`pipeline_inputs`  |`engine_inputs`|`engine_outputs`   |`pipeline_outputs` |
+|Description|Inputs passed by user|Tensors passed to engine|Outputs from engine (logits)|Postprocessed output returned to user|
+|`stage_id` |`pipeline_inputs`  |`engine_inputs`|`engine_outputs`   |`pipeline_outputs` |
     
+To apply a list of [pre-defined](link) and/or [custom functions](link) to a `stage_id` use the following format:
+ 
+```yaml
+stage_id:
+  # first function
+  - func:      # [REQUIRED STR] function identifier (built-in or path to custom)
+    frequency: # [OPTIONAL INT] logging frequency (default: 1000 - logs once per 1000 predictions)
+    target:    # [OPTIONAL STR] logger (default: all)
+  # second function
+  - func:
+    frequency:
+    target:
+ ...
+}
+```
 
-
-
-In the example YAML snippit below, 
+A tangible example YAML snippit is below:
 
 ```yaml
 pipeline_inputs:
-- func: builtins/batch-mean                 # pre-defined function
-  target: prometheus                        # NOTE: only logs to prometheus
-  frequency: 100
-- func: /path/to/your/logging_file.py:my_fn # custom function
-  frequency: 10
-  # target:                                 # NOTE: not specified, logs to all loggers
+  - func: builtins/identity                   # pre-defined function (logs raw data)
+    target: prometheus                        # only logs to prometheus
+    frequency: 100                            # logs raw data once per 100 predictions
+  - func: /path/to/logging_fns.py:my_fn       # custom function
+    # frequency:                              # not specified, defaults to once per 1000 predictions
+    # target:                                 # not specified, defaults to all loggers
+
 engine_inputs:
-- func: builtins/channel-mean
-  frequency: 100
-# engine_outputs:                           # NOTE: not specified, so not logged
-# pipeline_outputs:
+  - func: builtins/channel-mean               # pre-defined function (logs per channel mean pixel)
+    frequency: 10                             # logs channel-mean once per 10 predictions
+    # target:                                 # not specified, defaults to all loggers
+
+# engine_outputs:                             # not specified, so not logged
+# pipeline_outputs:                           # not specified, so not logged
 ```
+The configuration does the following at each stag
+- *Pipeline Inputs*: Raw data (from the `identity` function) is logged to Prometheus once every 100 predictions and a custom function called `my_fn` is applied once every 1000 predictions and is logged to all loggers.
+- *Engine Inputs*: The `channel-mean` function is applied once per 10 predictions and is logged to all loggers.
+- *Engine Outputs*: Not specified and therefore not logged 
+- *Pipeline Outputs*: Not specified and therefore not logged 
+
+
 
 
 </details>
