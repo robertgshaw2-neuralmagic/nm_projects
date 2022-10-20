@@ -1,10 +1,121 @@
-# DeepSparse Monitoring
+# DeepSparse Logging
 
-DeepSparse monitoring enables users to monitor the health of an ML deployment holistically:
+DeepSparse Logging enables users to monitor the health of an ML deployment holistically:
 - **System Logging** gives operations teams access to granual performance metrics, diagnosing and isolating deployment system health.
 - **Data Logging** gives ML teams access to inputs/outputs (and functions thereof) of each stage of an ML pipeline, supporting downsteam model health monitoring tasks.
 
-DeepSparse provides a simple YAML-based configuration setup with many pre-defined metrics and functions + a simple interface to add custom metrics using Python.
+DeepSparse provides a simple YAML-based configuration setup with many pre-defined metrics and functions in addition to an extensible interface for adding custom metrics using Python.
+
+## Configuration
+
+Logging is configured through YAML-files. 
+
+<details>
+    <summary><b>System Logging Configuration</b></summary>
+    </br>
+
+System Logging is *enabled* by default. All metrics are [pre-defined](/README.md#system-logging-metrics). Users can disable System Logging globally or at the Group level by adding the following key-value pairs to a configuration file.
+
+Example disabling all System Logging:
+
+```yaml
+system_logging: off
+```
+
+Example disabling at the Group Level:
+
+```yaml
+system_logging:
+    deployment_details: off
+    request_details: off
+    prediction_latency: on 
+    dynamic_batch_latency: off
+    # resource_utilization: on      << note: omitted groups are turned on by default
+```
+
+</details>
+
+<details>
+    <summary><b>Data Logging Configuration</b></summary>
+    </br>
+    
+Data Logging is *disabled* by default. Users can log the raw input / output (and functions thereof) at each stage of a `Pipeline`. Many functions have been [pre-defined](link) and users can provide [custom functions](link). 
+
+A `Pipeline` has 4 stages, each of which can be a `target` for data logging:
+|Stage      |Pipeline Inputs    |Engine Inputs  |Engine Outputs     |Pipeline Outputs   |
+|-----------|-------------------|---------------|-------------------|-------------------|
+|Desciption |Inputs passed by user|Tensors passed to the engine|Outputs from the engine (logits)|Postprocessed output returned to user|
+|Target     |`pipeline_inputs`  |`engine_inputs`|`engine_outputs`   |`pipeline_outputs` |
+    
+
+
+
+In the example YAML snippit below, 
+
+```yaml
+pipeline_inputs:
+- func: builtins/batch-mean                 # pre-defined function
+  target: prometheus                        # NOTE: only logs to prometheus
+  frequency: 100
+- func: /path/to/your/logging_file.py:my_fn # custom function
+  frequency: 10
+  # target:                                 # NOTE: not specified, logs to all loggers
+engine_inputs:
+- func: builtins/channel-mean
+  frequency: 100
+# engine_outputs:                           # NOTE: not specified, so not logged
+# pipeline_outputs:
+```
+
+
+</details>
+
+## Usage
+
+Monitoring is configured though a YAML file which is passed to either a `Server` or a `Pipeline`.
+
+<details> 
+    <summary><b>Server Usage</b></summary>
+    </br>
+
+The DeepSparse server is launched from the CLI using the `deepsparse.server` command. By default, all system logging is enabled in the Prometheus format and exposed on port `8001`
+
+For example, 
+```bash
+deepsparse.server --config config.yaml
+```
+</details>
+
+<details> 
+    <summary><b>Pipeline Usage</b></summary>
+    </br>
+
+`ManagerLogger` is initialized with the `config` argument, which is a path to a local configuration file, and is passed as the `logger` argument to a `Pipeline`. 
+
+For example, with the QA pipeline:
+
+```python
+from deepsparse import Pipeline
+
+# SparseZoo model stub or path to ONNX file
+model_path = "zoo:nlp/question_answering/bert-base/pytorch/huggingface/squad/12layer_pruned80_quant-none-vnni"
+
+# logger object referencing the local logging config file
+logger = ManagerLogger(config="logging-config.yaml")
+
+# pipeline instantiated with the config file
+pipeline = Pipeline.create(
+    task="question-answering",
+    model_path=model_path,
+    config="config.yaml"
+)
+
+my_name = qa_pipeline(question="What's my name?", context="My name is Snorlax")
+```
+</details>
+   
+
+
 
 ## System Logging Overview
 
@@ -18,7 +129,7 @@ DeepSparse provides System Logging to enable out-of-the-box monitoring of system
 See [below](/README.md#system-logging-metrics) for the detailed list.
 
 
-## System Logging Metrics
+### System Logging Metrics
 
 |Group              |Metric           |Metric Name              |Description                              |Granularity    |Usage  |Frequency      |
 |-------------------|---------------- |-------------------------|-----------------------------------------|---------------|-------|---------------|
