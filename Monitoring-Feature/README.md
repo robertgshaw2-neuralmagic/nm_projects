@@ -22,46 +22,33 @@ DeepSparse Logging is designed to provide maximum flexibility for users to extra
 ## Usage
 
 ### Metrics 
-DeepSparse provides access to two types of metrics:
+DeepSparse Logging provides access to two types of metrics:
 - **System Metrics** give operations teams access to granual performance metrics, diagnosing and isolating deployment system health. Examples include CPU utilization and query latency.
 
 - **Data Metrics** gives ML teams access to inputs/outputs (and functions thereof) of each stage of an ML pipeline, supporting downsteam tasks like measuring accuracy and data drift. Examples include raw inputs and projections thereof such as mean pixel value.
 
-### Configuration
+### Logging Configuration
 DeepSparse Logging provides YAML-based configuration setup with many pre-defined metrics and functions in addition to an extensible interface for adding custom metrics using Python.
 
 > :warning: System Metric Logging is ***enabled*** by default and the YAML file is used to disable groups of system metrics
 
 > :warning: Data Metric Logging is ***disabled*** by default and the YAML file is used to specify which data (or functions thereof) should be logged
 
-
-The configuration file looks like this:
-```yaml
-loggers
-```
-
 <details>
-    <summary><b>System Logging Configuration</b></summary>
+    <summary><b>System Logging Configuration Details</b></summary>
     </br>
 
 System Logging is *enabled* by default and all metrics are [pre-defined](/README.md#system-logging-metrics). 
 
 Users can disable System Logging globally or at the Group level by adding the following key-value pairs to a configuration file.
 
-Example YAML snippit disabling all System Logging:
-
-```yaml
-system_logging: on
-# system_logging: on               << note: omitting the system_logging key turns on all system logging by default
-```
-
-Example YAML snippit disabling all System Logging:
+Example YAML snippit enabling/disabling all globally:
 
 ```yaml
 system_logging: off
+# system_logging: on                << note: omitting the system_logging key turns on all system logging by default
 
 ```
-
 Example YAML snippit disabling at the Group Level:
 
 ```yaml
@@ -76,15 +63,17 @@ system_logging:
 </details>
 
 <details>
-    <summary><b>Data Logging Configuration</b></summary>
+    <summary><b>Data Logging Configuration Details</b></summary>
     </br>
-    
-Data Logging is *disabled* by default. Users can log functions of the inputs/outputs at each of the 4 stages of a `Pipeline`:
+        
+Data Logging is *disabled* by default. Users use a YAML configuration file to specify which data or functions thereof to log.
 
-|Stage      |Pipeline Inputs    |Engine Inputs  |Engine Outputs     |Pipeline Outputs   |
-|-----------|-------------------|---------------|-------------------|-------------------|
-|Description|Inputs passed by user|Tensors passed to engine|Outputs from engine (logits)|Postprocessed output returned to user|
-|`stage_id` |`pipeline_inputs`  |`engine_inputs`|`engine_outputs`   |`pipeline_outputs` |
+DeepSparse provides 4 "hooks" into the pipeline which users can target. At each "hook", users can log raw data, premade functions of raw data, and custom user functions of raw data.
+
+|Stage      |Pipeline Inputs      |Engine Inputs  |Engine Outputs     |Pipeline Outputs   |
+|-----------|---------------------|---------------|-------------------|-------------------|
+|Description|Inputs passed by user|Preprocessed tensors passed to model|Outputs from model (logits)|Postprocessed output returned to user|
+|`stage_id` |`pipeline_inputs`    |`engine_inputs`|`engine_outputs`   |`pipeline_outputs` |
     
 The following format is used to apply a list of [pre-defined](link) and/or [custom functions](link) to a Pipeline Stage:
  
@@ -99,7 +88,7 @@ stage_id:
     frequency:
     target:
  ...
-}
+ 
 ```
 
 A tangible example YAML snippit is below:
@@ -122,14 +111,19 @@ engine_inputs:
 # pipeline_outputs:                           # not specified, so not logged
 ```
 This configuration does the following at each stage of the Pipeline:
-- *Pipeline Inputs*: Raw data (from the `identity` function) is logged to Prometheus once every 100 predictions and a custom function called `my_fn` is applied once every 1000 predictions and is logged to all loggers.
-- *Engine Inputs*: The `channel-mean` function is applied once per 10 predictions and is logged to all loggers.
-- *Engine Outputs*: No logging occurs at this stage
-- *Pipeline Outputs*: No logging occurs at this stage
+- **Pipeline Inputs**: Raw data (from the `identity` function) is logged to Prometheus once every 100 predictions and a custom function called `my_fn` is applied once every 1000 predictions and is logged to all loggers.
+- **Engine Inputs**: The `channel-mean` function is applied once per 10 predictions and is logged to all loggers.
+- **Engine Outputs**: No logging occurs at this stage
+- **Pipeline Outputs**: No logging occurs at this stage
 
 </details>
 
+### Loggers
+DeepSparse Logging provides users with ability to log to Prometheus out-of-the-box as well as the ability to add custom loggers.
 
+[DAMIAN]
+
+Loggers are configured using the 
 
 ## Usage
 
