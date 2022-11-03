@@ -1,6 +1,8 @@
 # DeepSparse Logging
 
-DeepSparse Logging provides operational teams with access to telemetry necessary to monitor a ***production*** model deployment holistically. For users seeking to put ML into production, these data are the raw materials that underpin the monitoring processes needed to create a continual learning system that enables consistently fresh and accurate predictions in production.
+DeepSparse Logging provides operational teams with access to telemetry necessary to monitor a deployment. 
+
+For users seeking to put ML into production, these data are the raw materials that underpin the monitoring processes needed to create a system with consistently fresh and accurate predictions.
 
 <p align="center">
      <img src="continual-learning.png"
@@ -9,27 +11,29 @@ DeepSparse Logging provides operational teams with access to telemetry necessary
      />
 </p>
 
-There are many types of downstream monitoring tasks that ML teams may want to perform.
+There are many types of downstream monitoring tasks that ML teams may want to perform. Some are easier to do (such as looking at system performance) and some are harder (looking at performance requires manually labeling some data afterwards). Examples include:
+- **System performance:** what is the latency/throughput of a query?
+- **Data quality:** is there an error in the model pipeline?
+- **Data distribution shift:** are the inputs and outputs from the system expected?
+- **Model performance:** what is the accuracy of the predictions?
 
-<p align="center">
-     <img src="metrics.png"
-          alt="Metrics Diagram"
-          width="50%"
-     />
-</p>
-
-DeepSparse provides access to two types of metrics:
-- **System Metrics** give operations teams access to granual performance metrics, diagnosing and isolating deployment system health. Examples include CPU utilization and query latency.
-
-- **Data Metrics** gives ML teams access to inputs/outputs (and functions thereof) of each stage of an ML pipeline, supporting downsteam tasks like measuring accuracy and data drift. Examples include raw inputs with resulting predictions as well as projections of raw inputs like the mean pixel value.
+DeepSparse Logging is designed to provide maximum flexibility for users to extract the raw data from a production inference pipeline into the logging system of their choice to gain the telemetry needed for their deployment. 
 
 ## Usage
 
-DeepSparse provides YAML-based configuration setup with many pre-defined metrics and functions in addition to an extensible interface for adding custom metrics using Python.
+### Metrics 
+DeepSparse provides access to two types of metrics:
+- **System Metrics** give operations teams access to granual performance metrics, diagnosing and isolating deployment system health. Examples include CPU utilization and query latency.
 
-Logging is configured through YAML-files. 
-- System Logging is *enabled* by default, and the YAML file is used to disable groups of system metrics
-- Data Logging is *disabled* by defualt, and the YAML file is used to specify which data (or functions thereof) should be logged
+- **Data Metrics** gives ML teams access to inputs/outputs (and functions thereof) of each stage of an ML pipeline, supporting downsteam tasks like measuring accuracy and data drift. Examples include raw inputs and projections thereof such as mean pixel value.
+
+### Configuration
+DeepSparse Logging provides YAML-based configuration setup with many pre-defined metrics and functions in addition to an extensible interface for adding custom metrics using Python.
+
+> :warning: System Metric Logging is ***enabled*** by default, and the YAML file is used to disable groups of system metrics
+
+> :warning: Data Metric Logging is ***disabled*** by defualt, and the YAML file is used to specify which data (or functions thereof) should be logged
+
 
 The configuration file looks like this:
 ```yaml
@@ -40,12 +44,17 @@ loggers
     <summary><b>System Logging Configuration</b></summary>
     </br>
 
-System Logging is *enabled* by default. All metrics are [pre-defined](/README.md#system-logging-metrics). Users can disable System Logging globally or at the Group level by adding the following key-value pairs to a configuration file.
+System Logging is *enabled* by default.
+
+All metrics are [pre-defined](/README.md#system-logging-metrics). 
+
+Users can disable System Logging globally or at the Group level by adding the following key-value pairs to a configuration file.
 
 Example YAML snippit disabling all System Logging:
 
 ```yaml
 system_logging: off
+
 ```
 
 Example YAML snippit disabling at the Group Level:
