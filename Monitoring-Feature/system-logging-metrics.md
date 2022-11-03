@@ -1,6 +1,6 @@
 # System Logging Metrics
 
-DeepSparse provides System Logging to enable out-of-the-box monitoring of system performance and health. 
+This page includes details on the individual System Logging Metrics.
 
 ### Groups
 The following metric groups are enabled by default:
