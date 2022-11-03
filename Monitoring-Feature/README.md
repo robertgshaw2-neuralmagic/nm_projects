@@ -1,21 +1,22 @@
-# Overview
+# DeepSparse Logging Overview
 
-DeepSparse Logging provides operational teams with access to telemetry necessary to monitor a production model deployment holistically. For users seeking to put ML into production, these data provide the raw materials needed to build a continual learning system.
+DeepSparse Logging provides operational teams with access to telemetry necessary to monitor a ***production*** model deployment holistically. For users seeking to put ML into production, these data are the raw materials that underpin the monitoring processes needed to create a continual learning system that enables consistently fresh and accurate predictions in production.
 
-<img src="continual_learning.png"
-     alt="Continual Learnign Diagram"
-/>
+<p align="center">
+     <img src="continual-learning.png"
+          alt="Continual Learning Diagram"
+          width="50%"
+     />
+</p>
 
+DeepSparse provides access to two types of metrics:
+- **System Metrics** give operations teams access to granual performance metrics, diagnosing and isolating deployment system health. Examples include CPU utilization and query latency.
 
+- **Data Metrics** gives ML teams access to inputs/outputs (and functions thereof) of each stage of an ML pipeline, supporting downsteam tasks like measuring accuracy and data drift. Examples include raw inputs with resulting predictions as well as projections of raw inputs like the mean pixel value.
 
+## Usage
 
-- **System Logging** gives operations teams access to granual performance metrics, diagnosing and isolating deployment system health.
-
-- **Data Logging** gives ML teams access to inputs/outputs (and functions thereof) of each stage of an ML pipeline, supporting downsteam model health monitoring tasks.
-
-DeepSparse provides a simple YAML-based configuration setup with many pre-defined metrics and functions in addition to an extensible interface for adding custom metrics using Python.
-
-## Configuration
+DeepSparse provides YAML-based configuration setup with many pre-defined metrics and functions in addition to an extensible interface for adding custom metrics using Python.
 
 Logging is configured through YAML-files. 
 - System Logging is *enabled* by default, and the YAML file is used to disable groups of system metrics
