@@ -20,7 +20,7 @@ There are many types of downstream monitoring tasks that ML teams may want to pe
 DeepSparse Logging is designed to provide maximum flexibility for users to extract whatever data is needed from a production inference pipeline into the logging system of their choice. 
 
 ## Metrics 
-DeepSparse Logging provides access to two types of logging metrics:
+DeepSparse Logging provides access to two types of metrics:
 - **System Logging Metrics** give operations teams access to granual performance metrics, diagnosing and isolating deployment system health. Examples include CPU utilization and query latency.
 
 - **Data Logging Metrics** give ML teams access to data at each stage of an ML pipeline, supporting downsteam tasks like measuring accuracy and data drift. Examples include raw inputs and projections thereof such as mean pixel value.
@@ -64,7 +64,7 @@ In this example, system logging is turned on globally. The Deployment Details, R
 
 </details>
 
-> :warning: System Logging is ***enabled*** by default and the YAML file is used to disable groups of system metrics
+> :warning: System Logging is ***enabled*** by default
 
 <details>
     <summary><b>Data Logging</b></summary>
@@ -125,7 +125,7 @@ This configuration does the following at each stage of the Pipeline:
 
 </details>
 
-> :warning: Data Logging is ***disabled*** by default and the YAML file is used to specify which data (or functions thereof) should be logged
+> :warning: Data Logging is ***disabled*** by default
 
 **Additional Resources:**
 - [System Logging Metrics](/system-logging-metrics.md)
