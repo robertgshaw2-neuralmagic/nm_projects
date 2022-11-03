@@ -217,7 +217,7 @@ If no `ManagerLogger` is passed to a `Pipeline`, then logging is disabled.
 
 [@DAMIAN] - is system logging enabled or disabled if not passed a Manager Logger?
 
-[@DAMIAN] - how does it work with 
+[@DAMIAN] - how does Prometheus scape from the endpoint?
 
 For example, with the QA pipeline:
 
