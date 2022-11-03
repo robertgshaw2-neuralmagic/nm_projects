@@ -1,7 +1,16 @@
-# DeepSparse Logging
+# Overview
 
-DeepSparse Logging enables users to monitor the health of an ML deployment holistically:
+DeepSparse Logging provides operational teams with access to telemetry necessary to monitor a production model deployment holistically. For users seeking to put ML into production, these data provide the raw materials needed to build a continual learning system.
+
+<img src="continual_learning.png"
+     alt="Continual Learnign Diagram"
+/>
+
+
+
+
 - **System Logging** gives operations teams access to granual performance metrics, diagnosing and isolating deployment system health.
+
 - **Data Logging** gives ML teams access to inputs/outputs (and functions thereof) of each stage of an ML pipeline, supporting downsteam model health monitoring tasks.
 
 DeepSparse provides a simple YAML-based configuration setup with many pre-defined metrics and functions in addition to an extensible interface for adding custom metrics using Python.
