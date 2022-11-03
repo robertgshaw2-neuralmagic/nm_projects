@@ -30,9 +30,9 @@ DeepSparse provides access to two types of metrics:
 ### Configuration
 DeepSparse Logging provides YAML-based configuration setup with many pre-defined metrics and functions in addition to an extensible interface for adding custom metrics using Python.
 
-> :warning: System Metric Logging is ***enabled*** by default, and the YAML file is used to disable groups of system metrics
+> :warning: System Metric Logging is ***enabled*** by default and the YAML file is used to disable groups of system metrics
 
-> :warning: Data Metric Logging is ***disabled*** by defualt, and the YAML file is used to specify which data (or functions thereof) should be logged
+> :warning: Data Metric Logging is ***disabled*** by default and the YAML file is used to specify which data (or functions thereof) should be logged
 
 
 The configuration file looks like this:
@@ -44,11 +44,16 @@ loggers
     <summary><b>System Logging Configuration</b></summary>
     </br>
 
-System Logging is *enabled* by default.
-
-All metrics are [pre-defined](/README.md#system-logging-metrics). 
+System Logging is *enabled* by default and all metrics are [pre-defined](/README.md#system-logging-metrics). 
 
 Users can disable System Logging globally or at the Group level by adding the following key-value pairs to a configuration file.
+
+Example YAML snippit disabling all System Logging:
+
+```yaml
+system_logging: on
+# system_logging: on               << note: omitting the system_logging key turns on all system logging by default
+```
 
 Example YAML snippit disabling all System Logging:
 
