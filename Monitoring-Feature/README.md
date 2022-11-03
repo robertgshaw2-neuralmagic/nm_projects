@@ -19,26 +19,20 @@ There are many types of downstream monitoring tasks that ML teams may want to pe
 
 DeepSparse Logging is designed to provide maximum flexibility for users to extract whatever data is needed from a production inference pipeline into the logging system of their choice. 
 
-## User Guide
+## Metrics 
+DeepSparse Logging provides access to two types of logging metrics:
+- **System Logging Metrics** give operations teams access to granual performance metrics, diagnosing and isolating deployment system health. Examples include CPU utilization and query latency.
 
-### Metrics 
-DeepSparse Logging provides access to two types of logging:
-- **System Logging** give operations teams access to granual performance metrics, diagnosing and isolating deployment system health. Examples include CPU utilization and query latency.
+- **Data Logging Metrics** give ML teams access to data at each stage of an ML pipeline, supporting downsteam tasks like measuring accuracy and data drift. Examples include raw inputs and projections thereof such as mean pixel value.
 
-- **Data Logging** gives ML teams access to inputs/outputs (and functions thereof) of each stage of an ML pipeline, supporting downsteam tasks like measuring accuracy and data drift. Examples include raw inputs and projections thereof such as mean pixel value.
-
-### Logging Configuration
-DeepSparse Logging is configured via YAML files. There are many pre-defined metrics and functions in addition to an extensible interface for adding custom metrics using Python.
-
-> :warning: System Metric Logging is ***enabled*** by default and the YAML file is used to disable groups of system metrics
-
-> :warning: Data Metric Logging is ***disabled*** by default and the YAML file is used to specify which data (or functions thereof) should be logged
+## Configuration
+DeepSparse Logging is configured via YAML files.
 
 <details>
-    <summary><b>System Logging Configuration</b></summary>
+    <summary><b>System Logging</b></summary>
     </br>
 
-System Logging is *enabled* by default and all metrics are [pre-defined](/README.md#system-logging-metrics). Syetem Logging can be disabled 
+System Logging is *enabled* by default and all metrics are pre-defined. System Logging can be disabled 
 globally or at the Group level by adding the key-value pairs with `on` or `off` status.
 
 The following format is used:
@@ -47,11 +41,11 @@ The following format is used:
 # system_logging: on/off            # [OPTIONAL] flag to turn all system logging on/off; note: if omitted, defaults to on
 
 system_logging:
-    deployment_details:     on/off  # [OPTIONAL] flag to turn off deployment details group; if omitted, defaults to on
-    request_details:        on/off  # [OPTIONAL] flag to turn off request details group; if omitted, defaults to on
-    prediction_latency:     on/off  # [OPTIONAL] flag to turn off prediction latency group; if omitted, defaults to on
-    dynamic_batch_latency:  on/off  # [OPTIONAL] flag to turn off dynamic batch latency group; if omitted, defaults to on
-    resource_utilization:   on/off  # [OPTIONAL] flag to turn off resource utilization group; if omitted, defaults to on     
+    deployment_details: on/off      # [OPTIONAL] flag to turn off deployment details group; if omitted, defaults to on
+    request_details: on/off         # [OPTIONAL] flag to turn off request details group; if omitted, defaults to on
+    prediction_latency: on/off      # [OPTIONAL] flag to turn off prediction latency group; if omitted, defaults to on
+    dynamic_batch_latency: on/off   # [OPTIONAL] flag to turn off dynamic batch latency group; if omitted, defaults to on
+    resource_utilization: on/off    # [OPTIONAL] flag to turn off resource utilization group; if omitted, defaults to on     
 ```
 
 A tangible example YAML snippit is below:
@@ -70,18 +64,20 @@ In this example, system logging is turned on globally. The Deployment Details, R
 
 </details>
 
+> :warning: System Logging is ***enabled*** by default and the YAML file is used to disable groups of system metrics
+
 <details>
-    <summary><b>Data Logging Configuration</b></summary>
+    <summary><b>Data Logging</b></summary>
     </br>
         
 Data Logging is *disabled* by default. A YAML configuration file is used to specify which data or functions thereof to log.
 
 There are 4 `targets` in the inference pipeline where Data Logging can occur:
 
-|Stage      |Pipeline Inputs      |Engine Inputs  |Engine Outputs     |Pipeline Outputs   |
-|-----------|---------------------|---------------|-------------------|-------------------|
-|Description|Inputs passed by user|Preprocessed tensors passed to model|Outputs from model (logits)|Postprocessed output returned to user|
-|`target`   |`pipeline_inputs`    |`engine_inputs`|`engine_outputs`   |`pipeline_outputs` |
+|Stage         |Pipeline Inputs      |Engine Inputs  |Engine Outputs     |Pipeline Outputs   |
+|--------------|---------------------|---------------|-------------------|-------------------|
+|*Description* |Inputs passed by user|Preprocessed tensors passed to model|Outputs from model (logits)|Postprocessed output returned to user|
+|*`target`*    |`pipeline_inputs`    |`engine_inputs`|`engine_outputs`   |`pipeline_outputs` |
     
 The following format is used to apply a list of [pre-defined](link) and/or [custom functions](link) to a Pipeline `target`:
  
@@ -129,12 +125,19 @@ This configuration does the following at each stage of the Pipeline:
 
 </details>
 
-### Loggers
+> :warning: Data Logging is ***disabled*** by default and the YAML file is used to specify which data (or functions thereof) should be logged
+
+**Additional Resources:**
+- [System Logging Metrics](/system-logging-metrics.md)
+- [Predefined Data Logging Functions](/data-logging-functions.md)
+- [Custom Data Logging Functions](/data-logging-functions.md)
+
+## Loggers
 DeepSparse Logging provides users with ability to log to Prometheus out-of-the-box as well as the ability to add custom loggers.
 
-[DAMIAN]
+[@DAMIAN] - need your help here
 
-### Usage 
+## Usage 
 
 Both the `Server` and `Pipeline` interfaces can run with logging.
 
@@ -204,7 +207,17 @@ endpoints:
     <summary><b>Pipeline Usage</b></summary>
     </br>
 
-`ManagerLogger` is initialized with the `config` argument, which is a path to a local configuration file, and is passed as the `logger` argument to a `Pipeline`. 
+The `ManagerLogger` class will handles logging for a `Pipeline`. It is passed as the `logger` argument to a `Pipeline`. `ManagerLogger` is initialized with the `config` argument, which is a path to a local logging configuration file in the format described above. 
+
+If no `ManagerLogger` is passed to a `Pipeline`, then logging is disabled.
+
+[@DAMIAN] - how does it work with a multi-model engine?
+
+[@DAMIAN] - how does it work with a custom pipeline?
+
+[@DAMIAN] - is system logging enabled or disabled if not passed a Manager Logger?
+
+[@DAMIAN] - how does it work with 
 
 For example, with the QA pipeline:
 
@@ -221,9 +234,52 @@ logger = ManagerLogger(config="logging-config.yaml")
 pipeline = Pipeline.create(
     task="question-answering",
     model_path=model_path,
-    config="config.yaml"
+    logger=logger
 )
 
 my_name = qa_pipeline(question="What's my name?", context="My name is Snorlax")
 ```
+
+```yaml
+# logging-config.yaml
+
+loggers:
+     -prometheus
+     -custom_logger
+
+system_logging:
+     deployment_details: off
+     request_details: off
+     prediction_latency: on 
+     dynamic_batch_latency: off
+     # resource_utilization:               < not specified, so enabled by default
+
+# system_logging: on                       < optional flag to turn off all system logging; OPTIONS: [ON/OFF]
+
+data_logging:
+  - target: pipeline_inputs
+       mappings:
+        - func: builtins:sequence_length
+          frequency: 500
+          target: prometheus
+        - func: path/to/custom/metrics.py:fn2
+          # frequency:                    < not specified, so logs at default rate of 1/1000 inferences
+          # target:                       < not specified, so logs to all
+     - target: engine_inputs
+        mappings:
+        - func: buildins:identity
+          frequency: 1000
+          target: custom_logger
+     # - target: engine_outputs           < not specified, so nothing logged at this target
+     # - target: pipeline_outputs         < not specified, so nothing logged at this target
+```
 </details>
+
+## Examples
+- [Server with Prometheus / Grafana](link)
+- [Pipeline with Prometheus / Grafana](link)
+- [Monitoring while running Kubernetes](link)
+
+## DeepSparse Enterprise
+
+Interested in running in production? [Try DeepSparse Enterprise for 90 days free](link/to/trial/page).
