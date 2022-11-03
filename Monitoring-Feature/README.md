@@ -1,10 +1,19 @@
-# DeepSparse Logging Overview
+# DeepSparse Logging
 
 DeepSparse Logging provides operational teams with access to telemetry necessary to monitor a ***production*** model deployment holistically. For users seeking to put ML into production, these data are the raw materials that underpin the monitoring processes needed to create a continual learning system that enables consistently fresh and accurate predictions in production.
 
 <p align="center">
      <img src="continual-learning.png"
           alt="Continual Learning Diagram"
+          width="50%"
+     />
+</p>
+
+There are many types of downstream monitoring tasks that ML teams may want to perform.
+
+<p align="center">
+     <img src="metrics.png"
+          alt="Metrics Diagram"
           width="50%"
      />
 </p>
