@@ -1,4 +1,4 @@
-# System Logging Overview
+# System Logging Metrics
 
 DeepSparse provides System Logging to enable out-of-the-box monitoring of system performance and health. 
 
