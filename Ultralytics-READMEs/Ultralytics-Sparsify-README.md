@@ -1,8 +1,10 @@
-# Pruning YOLOv5 :rocket:
+# Sparsifying YOLOv5 :rocket:
 
-:books: This guide explains how to apply **pruning** and **quantization** using SparseML to YOLOv5 :rocket: models.
+:books: This guide explains how to apply **pruning** and **quantization** to YOLOv5 :rocket: models using SparseML.
 
 ## :arrow_heading_down: Installation
+
+#### [UPDATE WITH NEW PATHWAY]
 
 SparseML is an open-source library that includes tools to create sparse models. SparseML is integrated with
 Ultralytics YOLOv5, making it easy to apply SparseML's algorithms to YOLOv5 models.
@@ -21,9 +23,9 @@ SparseML uses two techniques to create sparse models:
 - **Pruning** systematically removes redundant weights from a network
 - **Quantization** reduces model precision by converting weights from `FP32` to `INT8`
 
-Pruning and Quantization work best when performed with access to training data that
-allows the model to slowly adjust to the new optimization space as the pathways are removed or
-become less precise. We descibe the key training-aware sparsity algorithms below. 
+Pruning and Quantization can be applied with minimal accuracy loss when performed with 
+access to training data. This allows the model to slowly adjust to the new optimization 
+space as the pathways are removed or become less precise. 
 
 <details>
     <summary><b>:scissors: Pruning: GMP</b></summary>
@@ -34,7 +36,7 @@ the weights closest to zero are iteratively removed over several epochs or train
 The remaining non-zero weights are then fine-tuned to the objective function. This iterative process enables 
 the model to slowly adjust to a new optimization space after pathways are removed before pruning again.
 
-SparseML enables you to run GMP on YOLO-v5 with a single command line call.
+SparseML enables you to run GMP on YOLOv5 with a single command line call.
 
 </details>
         
@@ -49,12 +51,10 @@ the weights and activations down to `INT8` on the forward pass but enable a full
 the weights at `FP32` on the backward pass. This allows the model to adapt to the loss of 
 information from quantization on the forward pass. 
 
-SparseML enables you to run QAT on YOLO-v5 with a single command line call.
+SparseML enables you to run QAT on YOLOv5 with a single command line call.
     
 </details>
     
-For more conceputal details checkout this [blog](https://neuralmagic.com/blog/pruning-overview/).
-
 ## :cook: Creating SparseML Recipes
 
 SparseML uses a concept called "Recipes" to apply the sparsification algorithms. Recipes are YAML files 
@@ -234,9 +234,9 @@ reported by the Ultralytics training script.
 
 Many inference runtimes accept ONNX as the input format.
 
-The SparseML installation provides an export script that you can use to load the training model folder 
-and create a new `model.onnx` file within. The export process is modified such that the quantized 
-and pruned models are corrected and folded properly. Be sure the `--weights` argument points to your trained model.
+SparseML provides an export script that you can use to create a new `model.onnx` version of your
+trained model. The export process is modified such that the quantized and pruned models are 
+corrected and folded properly. Be sure the `--weights` argument points to your trained model.
 
 ```
 sparseml.yolov5.export_onnx \           # [XXX] << update with new pathway
