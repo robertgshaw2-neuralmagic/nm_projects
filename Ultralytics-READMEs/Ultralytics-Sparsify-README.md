@@ -4,7 +4,7 @@
 
 ## :arrow_heading_down: Installation
 
-SparseML, an open-source library that includes tools to create sparse models. SparseML is integrated with
+SparseML is an open-source library that includes tools to create sparse models. SparseML is integrated with
 Ultralytics YOLOv5, making it easy to apply SparseML's algorithms to YOLOv5 models.
 
 Install SparseML with the following command. We recommend using a virtual enviornment.
@@ -17,7 +17,7 @@ pip install sparseml[torchvision] # [XXX] update with the new pathway
 Introducing Sparsity to YOLOv5 can improve inference performance, especially when paired with 
 an inference runtime that implements sparsity-aware optimizations.
 
-SparseML uses two major techniques to create sparse models:
+SparseML uses two techniques to create sparse models:
 - **Pruning** systematically removes redundant weights from a network
 - **Quantization** reduces model precision by converting weights from `FP32` to `INT8`
 
@@ -57,23 +57,22 @@ For more conceputal details checkout this [blog](https://neuralmagic.com/blog/pr
 
 ## :cook: Creating SparseML Recipes
 
-Recipes are YAML files that encode the hyperparameters of the **GMP** 
-and **QAT** algorithms. The rest of the SparseML system parses the Recipes to setup the **GMP** and 
-**QAT** algorithms.
+SparseML uses a concept called "Recipes" to apply the sparsification algorithms. Recipes are YAML files 
+that provide a declarative inferface to encode the hyperparameters of the algorithms. 
+The rest of the SparseML system parses the Recipes to setup **GMP** and **QAT**.
 
 The easiest way to create a Recipe for usage with SparseML is downloading a pre-made Recipe
 from the open-source SparseZoo model repo. SparseZoo has a recipe available for each version of YOLOv5 and 
-YOLOv5p. Checkout the model cards [here **UPDATE LINK**](https://sparsezoo.neuralmagic.com/).
+YOLOv5p. Checkout them out [here **UPDATE LINK**](https://sparsezoo.neuralmagic.com/).
 
 Some users may want to tweak a Recipe or create one from scratch. We will explain the `Modifiers` 
 used in the recipes for **GMP** and **QAT**. Checkout SparseML's [Recipe User Guide](https://docs.neuralmagic.com/user-guide/recipes/creating) 
 for more details on recipes.
 
->:rotating_light: **Pro-Tip:** the pre-made Recipes in the SparseZoo are very good. If a pre-made Recipe
->for a model already exists (e.g. for YOLOv5-s and YOLOv5-l), you should use the pre-made recipes as starting point
+>:rotating_light: **Pro-Tip #1:** the pre-made Recipes in the SparseZoo are very good. You should use the pre-made recipes as starting point
 >and tweak as needed.
 
->:rotating_light: **Pro-Tip #2:** With YOLOv5, you should consider using [sparse transfer learning **UPDATE LINK**](Ultralytics-STL-README.md). 
+>:rotating_light: **Pro-Tip #2:** You should consider using [sparse transfer learning **UPDATE LINK**](Ultralytics-STL-README.md). 
 >It is an easier way to create a sparse model trained on your data.
 
 <details>
@@ -162,7 +161,7 @@ Note the `model` is used here as a general placeholder; to determine the name of
 Pruning and quantization can be applied together. When run in a sparsity-aware runtime, the speedup
 from pruning and quantization amplify eachother. Here's what a recipe might look like with both GMP and QAT:
 
-```
+```yaml
 # recipe.yaml
     
 modifiers:
@@ -228,7 +227,7 @@ Used the `sparse_zoo` stub in this example, but you can also pass a local path t
 In general, deep neural networks are overparameterized, meaning we can remove weights and reduce
 precision with very little loss of accuracy. In this example, we achieve [**XX**]% recovery of the accuracy 
 for the dense baseline. The majority of layers are pruned between [**XX**]% and [**XX**]%, with some more 
-senstive layers pruned to [**50**]%. On our training run, final accuracy is [**XX**] mAP@0.5 as 
+senstive layers pruned to [**XX**]%. On our training run, final accuracy is [**XX**] mAP@0.5 as 
 reported by the Ultralytics training script.
 
 ## ⤴️ Exporting to ONNX
