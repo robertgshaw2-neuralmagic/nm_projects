@@ -1,32 +1,24 @@
-# Realtime YOLOv5 :rocket: Deployments on CPUs with DeepSparse
+# YOLOv5 :rocket: Deployments on CPUs with DeepSparse
 
-:books: Learn how to deploy YOLOv5 with **realtime latency on CPUs** utilizing Neural Magic's DeepSparse Engine:bangbang: 
-
-:cinema: Checkout a demo of DeepSparse running YOLOv5 in realtime on a 4 core laptop on [YouTube](https://www.youtube.com/watch?v=gGErxSqf05o).
-
-UPDATED September 2022
+:books: Learn how to deploy YOLOv5 with **realtime latency on CPUs** utilizing Neural Magic's DeepSparse:bangbang: 
 
 ## DeepSparse Overview
 
-DeepSparse is an inference runtime and server (similiar to NVIDIA's TensorRT+Triton) which runs **sparse** models with GPU-level performance on CPUs. By deploying perfomantly on CPUs, you can simplify deployment and reduce costs from cloud to edge.
+DeepSparse runs inference-optimized sparse models with GPU-class performance on commodity CPUs.
 
->:rotating_light: **Clarification:** When we say sparse models, we are describing sparsity in the **weights** of the model. With proper pruning algorithms you can set ~75% of YOLOv5-l weights to 0 and retain 95% of the dense model's accuracy. See [Sparsifying YOLOv5](Ultralytics-Sparsify-README.md) for more details.
+By deploying perfomantly on CPUs, you can simplify your deployment with the simplicity and scalability of software-defined inference:
+- Scale vertically from 2 to 192 cores, tailoring the footprint to an app's exact needs
+- Scale horizontally with standard Kubernetes, including using services like EKS/GKE
+- Deploy the same model/runtime on any hardware from Intel to AMD to ARM and from cloud to data center to edge, including on pre-existing systems
+- No wrestling with drivers, operator support, and compatibility issues
 
-DeepSparse achieves realtime performance on CPUs through two main innovations:
-- First, it implements sparse convolutions and matrix multiply operations, reducing the number of FLOPs by skipping the 0s. 
-- Second, it uses the CPU’s large fast caches to provide locality of reference, executing the network depthwise and asynchronously.
+With DeepSparse, you no longer need to pick between the performance of GPUs and the simplicity of software!
 
-<p align="center">
-  <img src="figure2c-3.svg" alt="Architecture Diagram" width="60%"/>
-</p>
-
-DeepSparse is :free: for research and testing, but requires a commercial license for production deployments. 
-
-Neural Magic has a [60 day free trail](link_to_trial_page) running for DeepSparse Enterprise.
+See [Sparse Transfer Learning with YOLOv5 - UPDATE LINK](link) or [Sparsifying YOLOv5 - UPDATE LINK](link) for more details.
 
 ## Example Deployment
 
-We will walk through an example deploying pre-sparsified YOLOv5-l with DeepSparse, following these steps:
+We will walk through an example deploying a sparse version of [XXX] with DeepSparse, following these steps:
 - Install DeepSparse
 - Collect ONNX File
 - Deploy a Model
@@ -39,37 +31,35 @@ wget -O basilica.jpg https://raw.githubusercontent.com/neuralmagic/deepsparse/ma
 
 ### :arrow_heading_down: Install DeepSparse
 
-Run the following. We reccomend you use a virtual enviornment.
+Run the following. We recommend you use a virtual enviornment.
 
 ```bash
 pip install deepsparse[server]
 ```
-
-> :warning: DeepSparse is tested on Python 3.6-3.9, ONNX 1.5.0-1.10.1, ONNX opset version 11+ and is manylinux compliant. It is limited to Linux systems running on X86 CPU architectures.
 
 ### 🔍 Collect an ONNX File
 
 DeepSparse accepts a model in the ONNX format.
 
 The `model_path` argument in the commands below tells DeepSparse where the ONNX file is. It can be one of two options:   
-- `sparsezoo_stub` which identifies a pre-sparsified model in Neural Magic's [SparseZoo](https://sparsezoo.neuralmagic.com)
-- `local_path` to `[model_name].onnx` in a local filesystem. For models trained/sparsified with Neural Magic's SparseML, ONNX files can be generated through the [export pathway](Ultralytics-STL-README.md#4-exporting-to-onnx)
+- `sparsezoo_stub` which identifies a pre-sparsified model in [SparseZoo](https://sparsezoo.neuralmagic.com)
+- `local_path` to `[model_name].onnx` in a local filesystem. For models trained/sparsified with SparseML, ONNX files can be generated through the [export pathway - UPDATE LINK](link.md#4-exporting-to-onnx)
 
-In the example below, we will use the **pruned-quantized** YOLOv5-l from the SparseZoo, identified by the following stub:
+In the example below, we will use the **pruned-quantized** [XXX] from the SparseZoo, identified by the following stub:
 ```
 zoo:cv/detection/yolov5-l/pytorch/ultralytics/coco/pruned_quant-aggressive_95
 ```
 ### :rocket: Deploy a Model
 
-The DeepSparse package contains two options for deployment: 
+DeepSparse contains two options for deployment: 
 
 <details>  
-  <summary><b>Python/C++ API:</b> run inference on the client side or within an application </summary>
+  <summary><b>Python API:</b> run inference on the client side or within an application </summary>
   <br>
   
   `Pipelines` wrap image pre-processing and output post-processing around the DeepSparse Engine. The DeepSparse-Ultralytics integration includes an out-of-the-box `Pipeline` that accepts raw images and outputs the bounding boxes.
 
-  Create a `Pipeline` for inference with sparse YOLOv5-l using the following Python code:
+  Create a `Pipeline` for inference with sparse [XXX] using the following Python code:
 
   ```python
   from deepsparse import Pipeline
@@ -78,7 +68,7 @@ The DeepSparse package contains two options for deployment:
   images = ["basilica.jpg"]
 
   # create Pipeline containing DeepSparse
-  model_stub = "zoo:cv/detection/yolov5-l/pytorch/ultralytics/coco/pruned_quant-aggressive_95"
+  model_stub = "xxx"
   yolo_pipeline = Pipeline.create(
       task="yolo",            # do the YOLO pre-processing + post-processing
       model_path=model_stub,  # if using a local model, can pass the local path here
@@ -94,9 +84,9 @@ The DeepSparse package contains two options for deployment:
   <br>
   
   DeepSparse offers a server runs on top of the popular FastAPI web framework and Uvicorn web server such that you can query a model via HTTP. 
-  The server supports any task from DeepSparse, such as `Pipelines` for object detection tasks.
+  The server supports any task from DeepSparse, such as object detection.
 
-  Spin up the server with sparse YOLOv5-l by running the following from the command line: 
+  Spin up the server with sparse [XXX] by running the following from the command line: 
 
   ```bash
   deepsparse.server \
@@ -124,15 +114,15 @@ The DeepSparse package contains two options for deployment:
   ```
 </details>
 
-### :bar_chart: Benchmark Latency / Throughput 
+### :bar_chart: Benchmark Performance
+You can quickly benchmarking performance with a single CLI command!
 
-The mission of Neural Magic is to enable GPU-class inference performance on commodity CPUs. Want to find out how fast our sparse YOLOv5 ONNX models perform inference? You can quickly do benchmarking tests on your own with a single CLI command!
+Let's demonstrate DeepSparse's performance speedup on sparse [XXX] vs dense [XXX].
 
-You only need to provide the model path of a SparseZoo ONNX model or your own local ONNX model to get started:
-
+#### Dense Performance
 ``` bash
 deepsparse.benchmark \
-    zoo:cv/detection/yolov5-l/pytorch/ultralytics/coco/pruned_quant-aggressive_95 \
+    xxx \
     --scenario sync 
 
 >> Original Model Path: zoo:cv/detection/yolov5-l/pytorch/ultralytics/coco/pruned_quant-aggressive_95
@@ -143,15 +133,64 @@ deepsparse.benchmark \
 >> Latency Median (ms/batch): 13.4177
 >> Latency Std (ms/batch): 0.2166
 >> Iterations: 741
-
 ```
 
-*Note: the performance numbers will vary depending on your machine's # cores, memory, and clock speed. In this example, we used* **XXX**
+#### Sparse Performance
+``` bash
+deepsparse.benchmark \
+    xxx \
+    --scenario sync 
+
+>> Original Model Path: zoo:cv/detection/yolov5-l/pytorch/ultralytics/coco/pruned_quant-aggressive_95
+>> Batch Size: 1
+>> Scenario: sync
+>> Throughput (items/sec): 74.0355
+>> Latency Mean (ms/batch): 13.4924
+>> Latency Median (ms/batch): 13.4177
+>> Latency Std (ms/batch): 0.2166
+>> Iterations: 741
+```
+
+As you can see, DeepSparse gained an **[XXX]** speedup from running the sparse model!
+
+Run the following to see the full list of scenarios. We recommend playing with the `--engine` option to compare to DeepSparse to 
+ONNXRuntime, the `--scenario` to try out multi or single stream inference, and `--batch-size` to test out throughput vs latency.
+
+```bash
+deepsparse.benchmark --help
+
+>> usage: deepsparse.benchmark [-h] [-b BATCH_SIZE] [-i INPUT_SHAPES]
+>>                            [-ncores NUM_CORES] [-s {async,sync,elastic}]
+>>                            [-t TIME] [-w WARMUP_TIME] [-nstreams NUM_STREAMS]
+>>                            [-pin {none,core,numa}]
+>>                            [-e {deepsparse,onnxruntime}] [-q]
+>>                            [-x EXPORT_PATH]
+>>                            model_path
+```
+
+#### Performance Chart
+
+The chart below demonstrates the performance speedup with DeepSparse comparing the baseline dense model (standard YOLOv5)
+to the inference optimized sparse models. We can see that the sparse models consistently enable you to gain a jump in performance
+with very limited sacrifice on accuracy.
+
+|Model                    |YOLOv5-n |YOLOv5-s |YOLOv5-m |YOLOv5-l |YOLOv5-x |
+|-------------------------|---------|---------|---------|---------|---------|
+|Dense Accuracy (mAP@50)  |  
+|Dense Throughput         |
+|Dense Latency            |
+|Sparse Accuracy (mAP@50) |
+|Sparse Throughput        |
+|Sparse Latency           |
+|**Accuracy % Baseline**  |
+|**Throughput Increase**  |
+
+*Note: In this example, we used **XXX** machine with **YYY** setting.*
 
 ## Get Started With DeepSparse
 
-🆓 **Research or Testing?** Production deployments require a license, but DeepSparse is free for research and testing. 
+🆓 **Research or Testing?** DeepSparse Community is free for research and testing. Production deployments require DeepSparse Enterprise.
 
-🧪 **Want to Try Commerical DeepSparse?** Neural Magic has a [60 day free trail](link_to_trial_page) running for the commerical DeepSparse.
+🧪 **Want to Try DeepSparse Enterprise?** Neural Magic has a [60 day free trail](link_to_trial_page) for DeepSparse Enterprise.
 
-🛒 **Want To Purchase A Subscription?** [See Pricing](pricing_page) or [Contact sales](link_to_contact_sales).
+🛒 **Want To Purchase A Subscription?** [See Pricing](pricing_page) or [Contact sales](link_to_contact_sales) to purchase DeepSparse Enterprise.
