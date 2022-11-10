@@ -6,15 +6,13 @@
 
 DeepSparse runs inference-optimized sparse models with GPU-class performance on commodity CPUs.
 
-By deploying perfomantly on CPUs, you can simplify your deployment with the simplicity and scalability of software-defined inference:
+CPU-only deployments take advantage of the simplicity and scalability of software-defined inference:
 - Scale vertically from 2 to 192 cores, tailoring the footprint to an app's exact needs
 - Scale horizontally with standard Kubernetes, including using services like EKS/GKE
-- Deploy the same model/runtime on any hardware from Intel to AMD to ARM and from cloud to data center to edge, including on pre-existing systems
+- Use the same model/runtime on any hardware from Intel to AMD to ARM and from cloud to edge, including on pre-existing systems
 - No wrestling with drivers, operator support, and compatibility issues
 
 With DeepSparse, you no longer need to pick between the performance of GPUs and the simplicity of software!
-
-See [Sparse Transfer Learning with YOLOv5 - UPDATE LINK](link) or [Sparsifying YOLOv5 - UPDATE LINK](link) for more details.
 
 ## Example Deployment
 
@@ -43,12 +41,16 @@ DeepSparse accepts a model in the ONNX format.
 
 The `model_path` argument in the commands below tells DeepSparse where the ONNX file is. It can be one of two options:   
 - `sparsezoo_stub` which identifies a pre-sparsified model in [SparseZoo](https://sparsezoo.neuralmagic.com)
-- `local_path` to `[model_name].onnx` in a local filesystem. For models trained/sparsified with SparseML, ONNX files can be generated through the [export pathway - UPDATE LINK](link.md#4-exporting-to-onnx)
+- `local_path` to `[model_name].onnx` in a local filesystem. ONNX files can be generated through SparseML's [export pathway - UPDATE LINK](link.md#4-exporting-to-onnx)
 
 In the example below, we will use the **pruned-quantized** [XXX] from the SparseZoo, identified by the following stub:
 ```
-zoo:cv/detection/yolov5-l/pytorch/ultralytics/coco/pruned_quant-aggressive_95
+# update
 ```
+
+#### Want A Sparse Version Of YOLOv5 Trained on Your Data?
+See [Sparse Transfer Learning with YOLOv5 - UPDATE LINK](link) or [Sparsifying YOLOv5 - UPDATE LINK](link) to learn how.
+
 ### :rocket: Deploy a Model
 
 DeepSparse contains two options for deployment: 
@@ -57,9 +59,9 @@ DeepSparse contains two options for deployment:
   <summary><b>Python API:</b> run inference on the client side or within an application </summary>
   <br>
   
-  `Pipelines` wrap image pre-processing and output post-processing around the DeepSparse Engine. The DeepSparse-Ultralytics integration includes an out-of-the-box `Pipeline` that accepts raw images and outputs the bounding boxes.
+  `Pipelines` wrap image pre-processing and output post-processing around the runtime. The DeepSparse-Ultralytics integration includes an out-of-the-box `Pipeline` that accepts raw images and outputs the bounding boxes.
 
-  Create a `Pipeline` for inference with sparse [XXX] using the following Python code:
+  Create a `Pipeline` for inference with sparse [XXX]:
 
   ```python
   from deepsparse import Pipeline
@@ -76,6 +78,7 @@ DeepSparse contains two options for deployment:
 
   # run inference on images, recieve bounding boxes + classes
   pipeline_outputs = yolo_pipeline(images=images, iou_thres=0.6, conf_thres=0.001)
+  print(pipeline_outputs)
   ```
 </details>
 
@@ -83,7 +86,7 @@ DeepSparse contains two options for deployment:
   <summary><b>HTTP Server:</b> easily setup a model service behind a REST API</summary>
   <br>
   
-  DeepSparse offers a server runs on top of the popular FastAPI web framework and Uvicorn web server such that you can query a model via HTTP. 
+  DeepSparse offers a server that runs on top of the popular FastAPI web framework and Uvicorn web server such that you can query a model via HTTP. 
   The server supports any task from DeepSparse, such as object detection.
 
   Spin up the server with sparse [XXX] by running the following from the command line: 
@@ -91,7 +94,7 @@ DeepSparse contains two options for deployment:
   ```bash
   deepsparse.server \
       task yolo \
-      --model_path "zoo:cv/detection/yolov5-l/pytorch/ultralytics/coco/pruned_quant-aggressive_95"
+      --model_path xxx
   ```
 
   An example request, using Python's `requests` package:
@@ -115,7 +118,6 @@ DeepSparse contains two options for deployment:
 </details>
 
 ### :bar_chart: Benchmark Performance
-You can quickly benchmarking performance with a single CLI command!
 
 Let's demonstrate DeepSparse's performance speedup on sparse [XXX] vs dense [XXX].
 
@@ -153,8 +155,9 @@ deepsparse.benchmark \
 
 As you can see, DeepSparse gained an **[XXX]** speedup from running the sparse model!
 
-Run the following to see the full list of scenarios. We recommend playing with the `--engine` option to compare to DeepSparse to 
-ONNXRuntime, the `--scenario` to try out multi or single stream inference, and `--batch-size` to test out throughput vs latency.
+The benchmark script makes it easy to test out different scenarios. 
+We recommend playing with `--engine` to compare to DeepSparse to ONNXRuntime, `--scenario` and `--num_streams`
+to try out multi or single stream inference, and `--batch-size` to test out performance in throughput settings.
 
 ```bash
 deepsparse.benchmark --help
@@ -171,8 +174,8 @@ deepsparse.benchmark --help
 #### Performance Chart
 
 The chart below demonstrates the performance speedup with DeepSparse comparing the baseline dense model (standard YOLOv5)
-to the inference optimized sparse models. We can see that the sparse models consistently enable you to gain a jump in performance
-with very limited sacrifice on accuracy.
+to the inference optimized sparse models. The sparse models consistently improve performance with 
+limited sacrifice on accuracy.
 
 |Model                    |YOLOv5-n |YOLOv5-s |YOLOv5-m |YOLOv5-l |YOLOv5-x |
 |-------------------------|---------|---------|---------|---------|---------|
