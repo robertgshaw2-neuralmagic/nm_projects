@@ -192,5 +192,3 @@ with very limited sacrifice on accuracy.
 🆓 **Research or Testing?** DeepSparse Community is free for research and testing. Production deployments require DeepSparse Enterprise.
 
 🧪 **Want to Try DeepSparse Enterprise?** Neural Magic has a [60 day free trail](link_to_trial_page) for DeepSparse Enterprise.
-
-🛒 **Want To Purchase A Subscription?** [See Pricing](pricing_page) or [Contact sales](link_to_contact_sales) to purchase DeepSparse Enterprise.
