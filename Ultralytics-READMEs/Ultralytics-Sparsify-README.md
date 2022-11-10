@@ -69,10 +69,10 @@ Some users may want to tweak a Recipe or create one from scratch. We will explai
 used in the recipes for **GMP** and **QAT**. Checkout SparseML's [Recipe User Guide](https://docs.neuralmagic.com/user-guide/recipes/creating) 
 for more details on recipes.
 
->:rotating_light: **Pro-Tip #1:** the pre-made Recipes in the SparseZoo are very good. You should use the pre-made recipes as starting point
+>:rotating_light: **Pro-Tip:** The pre-made Recipes in SparseZoo are state-of-the-art. Try the pre-made recipes
 >and tweak as needed.
 
->:rotating_light: **Pro-Tip #2:** You should consider using [sparse transfer learning **UPDATE LINK**](Ultralytics-STL-README.md). 
+>:rotating_light: **Pro-Tip:** Consider using [Sparse Transfer Learning **UPDATE LINK**](Ultralytics-STL-README.md). 
 >It is an easier way to create a sparse model trained on your data.
 
 <details>
@@ -209,7 +209,7 @@ SparseZoo has pre-made recipes available for every verion of YOLOv5 and YOLOv5p
 In this example, we will use dense [XXX] as the starting point and the pre-made sparsification recipe for [XXX]. 
 You can use the `sparsezoo_stub` to identify the sparsification recipe:
 ```
-zoo:cv/detection/yolov5-l/pytorch/ultralytics/coco/pruned_quant-aggressive_95
+zoo:cv/detection/yolov5-l/pytorch/ultralytics/coco/pruned_quant-aggressive_95 # [XXX] << update with the right stub
 ```
 
 The following CLI command downloads the sparsification recipe from the SparseZoo and 
