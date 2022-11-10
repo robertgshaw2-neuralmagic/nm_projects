@@ -1,11 +1,12 @@
 # Sparse Transfer Learning with YOLOv5 :rocket:
 
-:books: This guide explains how to fine-tune a sparse YOLOv5 :rocket: onto a custom dataset with [SparseML](https://github.com/neuralmagic/sparseml).
+:books: This guide explains how to fine-tune a sparse YOLOv5 :rocket: onto a custom dataset with SparseML.
 
 ## :arrow_heading_down: Installation
 
-We will utilize SparseML, an open-source library that includes tools to create sparse models. SparseML is integrated with
-Ultralytics, allowing you to apply sparse transfer learning to YOLOv5 with a single CLI command.
+#### [UPDATE WITH NEW PATHWAY]
+
+SparseML is an open-source library that includes tools to create sparse models. SparseML is integrated with Ultralytics, allowing you to apply Sparse Transfer Learning to YOLOv5 and YOLOv5p models.
 
 Install SparseML with the following command. We recommend using a virtual enviornment.
 ```bash
@@ -14,14 +15,12 @@ pip install sparseml[torchvision]
 
 ## 💡 Conceptual Overview
 
-Sparse transfer learning is the **easiest and best** way to create a sparse YOLOv5 model trained on custom data. 
-                                                                                                            
-Similiar to typical transfer learning, sparse transfer learning starts with a sparse model pre-trained on a large dataset 
-and fine-tunes the weights onto a smaller downstream dataset. Unlike typical fine-tuning, however, sparse transfer learning, enforces
-the sparsity structure of the starting model. In other words, the final trained model will have the same level of sparsity as the original model.
+Sparse Transfer Learning is the **easiest** way to create a sparse YOLOv5 model trained on custom data. 
+                                                                                                        
+Similiar to typical transfer learning you might be familiar with, Sparse Transfer Learning starts with a sparse model trained on a large dataset and fine-tunes the weights onto a smaller downstream dataset. However, with Sparse Transfer Learning, we maintain the sparsity structure of the starting model as the fine-tuning occurs. As such, the final trained model will have the same level of sparsity as the staring model.
                                                                                                             
 >:rotating_light: **Clarification:** When we say sparse models, we are describing sparsity in the **weights** of the model. 
-With proper pruning algorithms you can set ~75% of YOLOv5-l weights to 0 and retain 95% of the dense model's accuracy. 
+With proper pruning, you can set [XX]% of YOLOv5-l weights to 0 and retain [XX]% of the dense model's accuracy. 
 See [Sparsifying YOLOv5](Ultralytics-Sparsify-README.md) for more details.
 
 Sparse Transfer Learning saves you the GPU-hours and hyperparemeter expertise needed to create a sparse YOLOv5 from scratch.
@@ -37,128 +36,46 @@ There are four simple steps to sparse transfer learning with SparseML:
 ## 1. Select a Pre-Sparsified Model
 
 [SparseZoo](https://sparsezoo.neuralmagic.com/?domain=cv&sub_domain=detection&page=1)
-is an open-source repository of state-of-the-art pre-sparsified models, including YOLOv5-s and YOLOv5-l. 
+is an open-source repository of state-of-the-art pre-sparsified models. There is a sparse version of each
+YOLOv5 and YOLOv5p model available as the starting point for Sparse Transfer Learning.
 
-In this example, we will use the **pruned-quantized YOLOv5-l**. The majority of layers are pruned between 65% and 85% and it 
-achieves 95% recovery of the performance for the dense baseline on COCO. 
+In this example, we will use **[xxx]**. The majority of layers are pruned between [xx%] and [xx%] and it 
+achieves [xxx%] recovery of the performance for the dense baseline on COCO. 
 
 It is identifed by the following SparseZoo stub:
 ```
-zoo:cv/detection/yolov5-l/pytorch/ultralytics/coco/pruned_quant-aggressive_95
+# [XXX] add the stub
 ```
 
 ## 2. Create Dataset
 
 The [Train Custom Data](https://github.com/ultralytics/yolov5/wiki/Train-Custom-Data#1-create-dataset) tutorial has a detailed 
-explanation on creating a custom dataset. SparseML is integrated with Ultralytics and accepts data in the same format.
-
-SparseML contains a config file, including a download script) for the VOC dataset ([VOC.yaml](https://github.com/neuralmagic/sparseml/blob/ddfe45b6fa2722c9942300af684a618641eceb0d/src/sparseml/yolov5/data/VOC.yaml)) used in the example
-below. 
-
-<details>
-  <summary>Click to see what the dataset config file looks like</summary>
-
-
-```
-# YOLOv5 🚀 by Ultralytics, GPL-3.0 license
-# PASCAL VOC dataset http://host.robots.ox.ac.uk/pascal/VOC by University of Oxford
-# Example usage: python train.py --data VOC.yaml
-# parent
-# ├── yolov5
-# └── datasets
-#     └── VOC  ← downloads here
-
-
-# Train/val/test sets as 1) dir: path/to/imgs, 2) file: path/to/imgs.txt, or 3) list: [path/to/imgs1, path/to/imgs2, ..]
-path: datasets/VOC
-train: # train images (relative to 'path')  16551 images
-  - images/train2012
-  - images/train2007
-  - images/val2012
-  - images/val2007
-val: # val images (relative to 'path')  4952 images
-  - images/test2007
-test: # test images (optional)
-  - images/test2007
-
-# Classes
-nc: 20  # number of classes
-names: ['aeroplane', 'bicycle', 'bird', 'boat', 'bottle', 'bus', 'car', 'cat', 'chair', 'cow', 'diningtable', 'dog',
-        'horse', 'motorbike', 'person', 'pottedplant', 'sheep', 'sofa', 'train', 'tvmonitor']  # class names
-
-
-# Download script/URL (optional) ---------------------------------------------------------------------------------------
-download: |
-  import xml.etree.ElementTree as ET
-  from tqdm import tqdm
-  from utils.general import download, Path
-  def convert_label(path, lb_path, year, image_id):
-      def convert_box(size, box):
-          dw, dh = 1. / size[0], 1. / size[1]
-          x, y, w, h = (box[0] + box[1]) / 2.0 - 1, (box[2] + box[3]) / 2.0 - 1, box[1] - box[0], box[3] - box[2]
-          return x * dw, y * dh, w * dw, h * dh
-      in_file = open(path / f'VOC{year}/Annotations/{image_id}.xml')
-      out_file = open(lb_path, 'w')
-      tree = ET.parse(in_file)
-      root = tree.getroot()
-      size = root.find('size')
-      w = int(size.find('width').text)
-      h = int(size.find('height').text)
-      for obj in root.iter('object'):
-          cls = obj.find('name').text
-          if cls in yaml['names'] and not int(obj.find('difficult').text) == 1:
-              xmlbox = obj.find('bndbox')
-              bb = convert_box((w, h), [float(xmlbox.find(x).text) for x in ('xmin', 'xmax', 'ymin', 'ymax')])
-              cls_id = yaml['names'].index(cls)  # class id
-              out_file.write(" ".join([str(a) for a in (cls_id, *bb)]) + '\n')
-  # Download
-  dir = Path(yaml['path'])  # dataset root dir
-  url = 'https://github.com/ultralytics/yolov5/releases/download/v1.0/'
-  urls = [url + 'VOCtrainval_06-Nov-2007.zip',  # 446MB, 5012 images
-          url + 'VOCtest_06-Nov-2007.zip',  # 438MB, 4953 images
-          url + 'VOCtrainval_11-May-2012.zip']  # 1.95GB, 17126 images
-  download(urls, dir=dir / 'images', delete=False, threads=3)
-  # Convert
-  path = dir / f'images/VOCdevkit'
-  for year, image_set in ('2012', 'train'), ('2012', 'val'), ('2007', 'train'), ('2007', 'val'), ('2007', 'test'):
-      imgs_path = dir / 'images' / f'{image_set}{year}'
-      lbs_path = dir / 'labels' / f'{image_set}{year}'
-      imgs_path.mkdir(exist_ok=True, parents=True)
-      lbs_path.mkdir(exist_ok=True, parents=True)
-      image_ids = open(path / f'VOC{year}/ImageSets/Main/{image_set}.txt').read().strip().split()
-      for id in tqdm(image_ids, desc=f'{image_set}{year}'):
-          f = path / f'VOC{year}/JPEGImages/{id}.jpg'  # old img path
-          lb_path = (lbs_path / f.name).with_suffix('.txt')  # new label path
-          f.rename(imgs_path / f.name)  # move image
-          convert_label(path, lb_path, year, id)  # convert labels to YOLO format
-```
-
-</details>
+explanation on creating a custom dataset. SparseML is integrated with Ultralytics and accepts data in the same format. SparseML 
+contains a config file with a download script for the VOC dataset, which will be used in this example.
 
 ## 3. Run Sparse Transfer Learning with YOLOv5
 
-SparseML is integrated with Ultralytics, so you can kick off a training run with a simple CLI command (`sparseml.yolov5.train`). 
+SparseML is integrated with Ultralytics, so you can kick off a training run with a simple CLI command.
 
 All you have to do is specify a dataset, a base pre-sparsified model, and a transfer learning recipe.
 
 ### :cook: Transfer Learning Recipes
 
-SparseML uses **Recipes** to encode the the hyperparameters of the sparse transfer learning process. SparseZoo has pre-made transfer learning recipes for YOLOv5-s and YOLOv5-l off-the-shelf. 
->:rotating_light: Most should use the off-the-shelf recipes from SparseZoo for transfer learning (or slightly tweak if needed).
->**You can skip this section** if you use an off the shelf recipe from SparseZoo (likely a good starting point for most).
+SparseML uses **Recipes** to encode the the hyperparameters of the Sparse Transfer Learning algorithm. SparseZoo has pre-made Recipes for every version of YOLOv5 and YOLOv5p off-the-shelf. 
+>:rotating_light: You should use the off-the-shelf recipes from SparseZoo (tweaking the number of epoch and learning rate if needed).
 
 <details>
   
   <summary>Click to learn more</summary>
   <br>
   
-You can see details on **Recipes** in the [Pruning YOLOv5 Tutorial](Ultralytics-Sparsify-README.md#cook-creating-sparseml-recipes) if interested. 
+You can see details on **Recipes** in the [Sparsifying YOLOv5 Tutorial **UPDATE LINK**](Ultralytics-Sparsify-README.md#cook-creating-sparseml-recipes) if interested. 
 
 For sparse transfer learning, the key **Modifiers** in the recipe are:
 - `ConstantPruningModifier` which instructs SparseML to maintain the starting sparsity level as it fine-tunes
 - `QuantizationModifier` which instructs SparseML to quantize the model 
 
-For example, in the [YOLOv5-l transfer learning recipe](https://sparsezoo.neuralmagic.com/models/cv%2Fdetection%2Fyolov5-l%2Fpytorch%2Fultralytics%2Fcoco%2Fpruned_quant-aggressive_95), the following lines are included in the recipe:
+For example, in the [XXX Transfer Learning recipe UPDATE LINK](link), the following lines are included in the recipe:
 
 ```
 pruning_modifiers:
@@ -173,18 +90,14 @@ quantization_modifiers:
 ```
 </details>
 
-### 🏋️ Training The Model
+### 🏋️ Run The Algorithm
 
-As an example, we will sparse transfer learn **pruned-quantized YOLOv5-l** (which was trained on COCO) onto the VOC dataset. 
+We will Sparse Transfer Learn **pruned-quantized XXX** onto the VOC dataset. 
 
-The `sparseml.yolov5.train` CLI command downloads the VOC dataset (using the download script from `VOC.yaml`) and kicks off transfer learning using the pre-made recipe from SparseZoo.
-
-The example uses passes stubs as the `weights` and `recipe` parameters, bt you can also pass local paths to a model / recipe.
-
-SparseML is integrated with Ultralytics, you get all of the same [outputs and visualizations](https://github.com/ultralytics/yolov5/wiki/Train-Custom-Data#4-visualize) from typical YOLOv5 training.
+The `xxx` CLI command downloads the model and VOC dataset (using the download script from `VOC.yaml`) and kicks off the training process using the pre-made recipe from SparseZoo.
 
 ```bash
-sparseml.yolov5.train \
+sparseml.yolov5.train \     # update with new pathway
     --data VOC.yaml \
     --cfg models_v5.0/yolov5l.yaml \
     --hyp data/hyps/hyp.finetune.yaml \
@@ -192,17 +105,19 @@ sparseml.yolov5.train \
     --recipe zoo:cv/detection/yolov5-l/pytorch/ultralytics/coco/pruned_quant-aggressive_95?recipe_type=transfer
 ```
   - `--data` is the config file for the dataset
-  - `--cfg` / `--hyp` are parameters that do **MARK: XXXXX**
+  - `--cfg` / `--hyp` XXX
   - `--weights` identifies the base pre-sparsfied model for the transfer learning. It can be a SparseZoo stub or a path to a local model
   - `--recipe` identifies the transfer learning recipe. It can be SparseZoo stub or a path to a local recipe
 
-Once the training is finished, you will have a pruned-quantized YOLOv5-l fine-tuned on VOC.
+Once the training is finished, you will have a pruned-quantized [XXX] mode trained on VOC!
+
+The example uses passes SparsZoo stubs as the `weights` and `recipe` parameters, but you can also pass local paths to a model / recipe.
 
 ## 4. Exporting to ONNX
 
 Many inference runtimes accept ONNX as the input format.
 
-SparseML provides a `sparseml.yolov5.export_onnx` command that you can use to export. SparseML's export process 
+SparseML provides a script that you can use to export to ONNX. SparseML's export process 
 ensures that the quantized and pruned models properly tranlated to ONNX. Be sure the `--weights` argument points to your trained model.
 
 ```
@@ -210,11 +125,3 @@ sparseml.yolov5.export_onnx \
    --weights path/to/weights.pt \
    --dynamic
 ```
-
-## 🚀 Deploying YOLOv5 on CPUs for Performance
-
-The resulting pruned-quantized YOLOv5-l model is now only 11MB vs the original dense model at 143MB. However, because we pruned in an unstructured manner 
-(where any weight can be set to 0, not just groups of weights), inference runtimes (especially GPU-based inference runtimes) will be unlikely to get 
-much of a performance speedup. To take advantage of unstructured sparsity, you must deploy on a sparsity-aware inference runtime.
-
-See [YOLOv5's integration with a DeepSparse](Ultralytics-DeepSparse-README.md) for more details on speedups with sparsity-aware runtimes.
