@@ -66,8 +66,7 @@ from the open-source SparseZoo model repo. SparseZoo has a recipe available for 
 YOLOv5p. Checkout them out [here **UPDATE LINK**](https://sparsezoo.neuralmagic.com/).
 
 Some users may want to tweak a Recipe or create one from scratch. We will explain the `Modifiers` 
-used in the recipes for **GMP** and **QAT**. Checkout SparseML's [Recipe User Guide](https://docs.neuralmagic.com/user-guide/recipes/creating) 
-for more details on recipes.
+used in the Recipes for **GMP** and **QAT**. 
 
 >:rotating_light: **Pro-Tip:** The pre-made Recipes in SparseZoo are state-of-the-art. Try the pre-made recipes
 >and tweak as needed.
@@ -159,7 +158,7 @@ Note the `model` is used here as a general placeholder; to determine the name of
     </br>
     
 Pruning and quantization can be applied together. When run in a sparsity-aware runtime, the speedup
-from pruning and quantization amplify eachother. Here's what a recipe might look like with both GMP and QAT:
+from pruning and quantization amplify eachother. Here's what a Recipe might look like with both GMP and QAT:
 
 ```yaml
 # recipe.yaml
@@ -199,12 +198,13 @@ modifiers:
     
 </details>
 
+Checkout SparseML's [Recipe User Guide](https://docs.neuralmagic.com/user-guide/recipes/creating) 
+for more details on creating recipes.
+
 ## :fork_and_knife: Applying Recipes to YOLOv5
 
 Once you have created a Recipe or identifed a Recipe in the SparseZoo, you can use the SparseML-YOLOv5 integration 
 to kick off the sparsification process with a single command line call.
-
-SparseZoo has pre-made recipes available for every verion of YOLOv5 and YOLOv5p
 
 In this example, we will use dense [XXX] as the starting point and the pre-made sparsification recipe for [XXX]. 
 You can use the `sparsezoo_stub` to identify the sparsification recipe:
